@@ -15,6 +15,10 @@ class RemoteServiceError(BaseWillItRainInException):
     pass
 
 
+class LocationNotFound(BaseWillItRainInException):
+    pass
+
+
 class TooManyLocations(BaseWillItRainInException):
     pass
 
@@ -66,6 +70,8 @@ class MetaweatherService(object):
         json_locations = self._json_parse_mw_response(mw_location_search_resp)
         if len(json_locations) > max_locations:
             raise TooManyLocations()
+        if len(json_locations) == 0:
+            raise LocationNotFound()
         return json_locations
 
     def get_todays_forecast_in_location(self, woeid):
@@ -124,7 +130,9 @@ if __name__ == "__main__":
         locations = mw_service.get_matching_locations(args.city)
     except RemoteServiceError as rse:
         sys.exit("Remote forecasting service call has failed with the following message: %s " % str(rse))
-    except TooManyLocations as tml:
+    except LocationNotFound:
+        sys.exit("Unknown city '%s'" % args.city)
+    except TooManyLocations:
         sys.exit("Too many locations found matching the requested argument, please refine and try again")
     for loc in locations:
         loc_info, weather = mw_service.get_todays_forecast_in_location(loc['woeid'])

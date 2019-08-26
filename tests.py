@@ -44,6 +44,18 @@ class TestWillItRainIn(unittest.TestCase):
         self.assertRaises(will_it_rain_in.RemoteServiceError, mw_service.get_matching_locations, 'Toulouse')
 
     @patch.object(will_it_rain_in.MetaweatherService, '_mw_location_search')
+    def test_mw_location_search_notfound(self, mock_mw_location_search):
+        # test setup
+        mock_service_response = create_autospec(Response)
+        mock_service_response.ok = True
+        mock_service_response.text = '[]'
+        mock_mw_location_search.return_value = mock_service_response
+
+        # service call
+        mw_service = will_it_rain_in.MetaweatherService()
+        self.assertRaises(will_it_rain_in.LocationNotFound, mw_service.get_matching_locations, 'ezrgtury')
+
+    @patch.object(will_it_rain_in.MetaweatherService, '_mw_location_search')
     def test_mw_location_search_toomany(self, mock_mw_location_search):
         # test setup
         mock_service_response = create_autospec(Response)
