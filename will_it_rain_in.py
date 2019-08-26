@@ -112,7 +112,7 @@ def format_location(location_info):
 
 
 def format_weather(consolidated_weather):
-    no_rain_abbr = ['s', 'lc', 'hc']
+    no_rain_abbr = ['c', 'lc', 'hc']
     data = {'weather_state': consolidated_weather['weather_state_name'],
             'predictability': consolidated_weather['predictability'],
             'rain': 'NO RAIN' if consolidated_weather['weather_state_abbr'] in no_rain_abbr
